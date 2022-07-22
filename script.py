@@ -1,3 +1,6 @@
+# Important! This script changes every .md file in the directory where it's run.
+# best to back up your data. Script doesn't back up.
+
 import fileinput, glob, os, pathlib, shutil, sys 
 
 # I've always ran this script in the same directory as the "Notes" directory 
@@ -17,7 +20,11 @@ def move_to_root_folder(root_path, cur_path):
     # remove empty folders
     if cur_path != root_path:
         os.rmdir(cur_path)
-
+       
+    
+# create tags based on folder sctructure.
+# eg. #2.Areas doesn't work in Bear, so changing . -> -
+# then adding a # for every folder structure at the bottom of each note.
         
 for filepath in pathlib.Path('Notes').glob('**/*'):
     file = filepath.absolute()
@@ -26,10 +33,12 @@ for filepath in pathlib.Path('Notes').glob('**/*'):
     if str(file).endswith('.md'):
         print('processing file > '+str(file))
         tag = str(only_path).replace(" ", "").replace(".","-")
-        
         metadata = '\n\n#'+tag
+        # open md file
         with open(file, 'r') as original: data = original.read()
+        # updating the image linking from Obsidian to Bear standard
         data = data.replace('![[','![](').replace(']]',')')
+        # write md file
         with open(file, 'w') as modified: modified.write(data + metadata)
 
 move_to_root_folder('Notes', 'Notes')
